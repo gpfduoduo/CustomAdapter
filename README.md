@@ -1,9 +1,8 @@
-# CustomAdapter
-custom adapter 
-
-## Description
+# Description
 Use custom adapter, you need not write many adapter with unuseful code.   
 In details, for example
+
+## Example
 
 ``` 
 public class MyAdapter extends CustomAdapter<Zte>
