@@ -23,3 +23,12 @@ public class MyAdapter extends CustomAdapter<Zte>
 }
 
 ```
+
+the zte entity calss
+```
+public class Zte
+{
+    public int mCount;
+}
+
+```
