@@ -2,7 +2,7 @@
 custom adapter 
 
 ## Description
-custom adapter, you need not write many adapter with unuseful code.   
+Use custom adapter, you need not write many adapter with unuseful code.   
 In details, for example
 
 ``` 
@@ -24,7 +24,7 @@ public class MyAdapter extends CustomAdapter<Zte>
 
 ```
 
-the zte entity calss
+The entity calss
 ```
 public class Zte
 {
