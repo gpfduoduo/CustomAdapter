@@ -1,6 +1,6 @@
 # Description
 Use custom adapter, you need not write many adapter with unuseful code.   
-In details, for example
+In details, for example below...
 
 ## Example
 
