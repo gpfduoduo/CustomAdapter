@@ -1,4 +1,4 @@
-package com.guo.duoduo.customadapter.adapter.customadapter;
+package com.guo.duoduo.customadapterlibrary;
 
 
 import java.util.List;
@@ -15,10 +15,10 @@ import android.widget.BaseAdapter;
  */
 public abstract class CustomAdapter<T> extends BaseAdapter
 {
-    Context mContext;
-    List<T> mList;
-    int mResLayoutId;
-    LayoutInflater mLayoutInflater;
+    protected Context mContext;
+    protected List<T> mList;
+    protected int mResLayoutId;
+    protected LayoutInflater mLayoutInflater;
 
     public CustomAdapter(Context context, int resLayoutId, List<T> list)
     {

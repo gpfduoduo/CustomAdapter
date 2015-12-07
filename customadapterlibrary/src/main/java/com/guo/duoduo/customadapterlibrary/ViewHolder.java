@@ -1,4 +1,4 @@
-package com.guo.duoduo.customadapter.adapter.customadapter;
+package com.guo.duoduo.customadapterlibrary;
 
 
 import android.util.SparseArray;
@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 
 /**
  * Created by 郭攀峰 on 2015/11/21.

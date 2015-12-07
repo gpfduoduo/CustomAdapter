@@ -1,11 +1,9 @@
-package com.guo.duoduo.customadapter.adapter.customadapter;
-
+package com.guo.duoduo.customadapterlibrary;
 
 import java.util.List;
 
 import android.content.Context;
 import android.widget.AbsListView;
-
 
 /**
  * Created by 郭攀峰 on 2015/12/7.
