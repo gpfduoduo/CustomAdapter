@@ -2,6 +2,9 @@
 Use custom adapter, you need not write many adapter with unuseful code.   
 In details, for example below...
 
+##实现：
+调用开源的StickyGridHeader实现根据类似于iphone显示图片的功能，并且实现了滑动不加载图片，只有停止的时候加载当前页面的图片，这样很好的避免了卡断现象的发生。   
+
 ## Example
 
 ``` 
@@ -31,3 +34,6 @@ public class Zte
 }
 
 ```
+
+## 开源库 
+[我的博客](https://github.com/TonicArtos/StickyGridHeaders)
