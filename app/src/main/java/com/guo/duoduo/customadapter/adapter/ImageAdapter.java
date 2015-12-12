@@ -6,6 +6,7 @@ import java.util.List;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Point;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -30,10 +31,12 @@ public class ImageAdapter extends CustomImageAdapter<GridItem>
         AbsListView.OnScrollListener,
         StickyGridHeadersSimpleAdapter
 {
+    private static final String tag = ImageAdapter.class.getSimpleName();
     private boolean mIsInit = false;
     private StickyGridHeadersGridView mStickyGridHeadersGridView;
     private Point mPoint = new Point(0, 0);
     private int mStartIndex, mEndIndex;
+    private OnCustomScrollListener mOnCustomScrollListener;
 
     public ImageAdapter(AbsListView view, Context context, int resLayoutId,
             List<GridItem> list)
@@ -91,47 +94,60 @@ public class ImageAdapter extends CustomImageAdapter<GridItem>
         switch (scrollState)
         {
             case SCROLL_STATE_IDLE :
-                for (; mStartIndex < mEndIndex; mStartIndex++)
-                {
-                    int realIndex = mStickyGridHeadersGridView
-                            .translatePosition(mStartIndex);
-                    if (realIndex < 0)
-                        continue;
-
-                    String path = mList.get(realIndex).getPath();
-                    ImageView img = (ImageView) mStickyGridHeadersGridView
-                            .findViewWithTag(path);
-                    Bitmap bitmap = NativeImageLoader.getInstance().loadNativeImage(path,
-                        mPoint, new NativeImageLoader.NativeImageCallBack()
-                        {
-
-                            @Override
-                            public void onImageLoader(Bitmap bitmap, String path)
-                            {
-                                ImageView mImageView = (ImageView) mStickyGridHeadersGridView
-                                        .findViewWithTag(path);
-                                if (bitmap != null && mImageView != null)
-                                {
-                                    mImageView.setImageBitmap(bitmap);
-                                }
-                            }
-                        });
-
-                    if (bitmap != null)
-                        img.setImageBitmap(bitmap);
-                    else
-                        img.setImageResource(R.mipmap.friends_sends_pictures_no);
-                }
+                loadImage();
                 break;
         }
+    }
+
+    public void loadImage()
+    {
+        for (; mStartIndex < mEndIndex; mStartIndex++)
+        {
+            int realIndex = mStickyGridHeadersGridView.translatePosition(mStartIndex);
+            if (realIndex < 0)
+                continue;
+
+            String path = mList.get(realIndex).getPath();
+            ImageView img = (ImageView) mStickyGridHeadersGridView.findViewWithTag(path);
+            Bitmap bitmap = NativeImageLoader.getInstance().loadNativeImage(path, mPoint,
+                new NativeImageLoader.NativeImageCallBack()
+                {
+
+                    @Override
+                    public void onImageLoader(Bitmap bitmap, String path)
+                    {
+                        ImageView mImageView = (ImageView) mStickyGridHeadersGridView
+                                .findViewWithTag(path);
+                        if (bitmap != null && mImageView != null)
+                        {
+                            mImageView.setImageBitmap(bitmap);
+                        }
+                    }
+                });
+
+            if (bitmap != null)
+                img.setImageBitmap(bitmap);
+            else
+                img.setImageResource(R.mipmap.friends_sends_pictures_no);
+        }
+    }
+
+    public void addOnCustomScrollListener(OnCustomScrollListener listener)
+    {
+        mOnCustomScrollListener = listener;
     }
 
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount,
             int totalItemCount)
     {
+
+        Log.d(tag, "onScroll");
         mStartIndex = firstVisibleItem;
         mEndIndex = firstVisibleItem + visibleItemCount;
+        if (mOnCustomScrollListener != null)
+            mOnCustomScrollListener.onCustomScroll(view, firstVisibleItem,
+                visibleItemCount, totalItemCount);
     }
 
     @Override
@@ -153,6 +169,12 @@ public class ImageAdapter extends CustomImageAdapter<GridItem>
         mHeaderHolder.mTextView.setText(mList.get(position).getTime());
 
         return convertView;
+    }
+
+    public interface OnCustomScrollListener
+    {
+        public void onCustomScroll(AbsListView view, int firstVisibleItem,
+                int visibleItemCount, int totalItemCount);
     }
 
     public static class HeaderViewHolder
