@@ -13,32 +13,28 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.View;
 import android.widget.AbsListView;
-import android.widget.AdapterView;
 import android.widget.GridView;
 
 import com.guo.duoduo.customadapter.adapter.ImageAdapter;
 import com.guo.duoduo.customadapter.entity.GridItem;
 import com.guo.duoduo.customadapter.utils.ImageScanner;
 import com.guo.duoduo.customadapter.utils.YMComparator;
-import com.guo.duoduo.customadapter.view.FastScrollBar;
+import com.guo.duoduo.customadapter.view.FastScrollLayout;
 
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener
+public class Main2Activity extends AppCompatActivity
 {
-    private static final String tag = MainActivity.class.getSimpleName();
+
     private ProgressDialog mProgressDialog;
     private ImageScanner mScanner;
     private GridView mGridView;
-    private FastScrollBar mFastScrollBar;
+    private FastScrollLayout mFastScrollLayout;
     private List<GridItem> mGirdList = new ArrayList<>();
     private ImageAdapter imageAdapter;
     private static int section = 1;
@@ -49,27 +45,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setContentView(R.layout.activity_main2);
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         mGridView = (GridView) findViewById(R.id.asset_grid);
-        mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener()
-        {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position,
-                    long id)
-            {
-                startActivity(new Intent(MainActivity.this, Main2Activity.class));
-            }
-        });
-        imageAdapter = new ImageAdapter(mGridView, MainActivity.this, R.layout.grid_item,
-            mGirdList);
+        imageAdapter = new ImageAdapter(mGridView, Main2Activity.this,
+            R.layout.grid_item, mGirdList);
         mScanner = new ImageScanner(this);
         mScanner.scanImages(new ImageScanner.ScanCompleteCallBack()
         {
             {
-                mProgressDialog = ProgressDialog.show(MainActivity.this, null, "正在加载...");
+                mProgressDialog = ProgressDialog
+                        .show(Main2Activity.this, null, "正在加载...");
             }
 
             @Override
@@ -120,15 +108,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             {
                 if (!isFastScrolling)
                 {
-                    mFastScrollBar.setCurrentPlace((float) firstVisibleItem
+                    mFastScrollLayout.setCurrentPlace((float) firstVisibleItem
                         / (totalItemCount - visibleItemCount));
                 }
             }
         });
 
-        mFastScrollBar = (FastScrollBar) findViewById(R.id.fast_bar);
-        mFastScrollBar
-                .setOnChangeFastScrollPlace(new FastScrollBar.OnChangeFastScrollPlaceListener()
+        mFastScrollLayout = (FastScrollLayout) findViewById(R.id.fast_layout);
+        mFastScrollLayout
+                .setOnChangeFastScrollPlace(new FastScrollLayout.OnChangeFastScrollPlaceListener()
                 {
                     @Override
                     public void onTouchingLetterChanged(float percent)
@@ -158,11 +146,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         TimeZone.setDefault(tz);
         SimpleDateFormat format = new SimpleDateFormat("yyyy年MM月dd日", Locale.getDefault());
         return format.format(new Date(time * 1000L));
-    }
-
-    @Override
-    public void onClick(View v)
-    {
-        Log.d(tag, "TextView onclick");
     }
 }

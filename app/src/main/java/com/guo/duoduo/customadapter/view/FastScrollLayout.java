@@ -1,15 +1,12 @@
 package com.guo.duoduo.customadapter.view;
 
-
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.guo.duoduo.customadapter.R;
 
@@ -17,13 +14,12 @@ import com.guo.duoduo.customadapter.R;
 /**
  * Created by 郭攀峰 on 2015/12/13.
  */
-public class FastScrollBar extends View
+public class FastScrollLayout extends RelativeLayout
 {
-
-    private static final String tag = FastScrollBar.class.getSimpleName();
+    private static final String tag = FastScrollLayout.class.getSimpleName();
 
     private OnChangeFastScrollPlaceListener onChangeFastScrollPlaceListener;
-
+    private TextView mDragView;
     private float currentY = 0;
     private float savedY = 0;
     private float downY = 0;
@@ -32,62 +28,36 @@ public class FastScrollBar extends View
     private int barWidth = 0;
     private int viewHeight = 0;
 
-    private Bitmap bitFastScroll;
-
-    public FastScrollBar(Context context)
-    {
-        super(context);
-    }
-
-    public FastScrollBar(Context context, AttributeSet attrs)
+    public FastScrollLayout(Context context, AttributeSet attrs)
     {
         super(context, attrs);
-        init();
     }
 
-    public FastScrollBar(Context context, AttributeSet attrs, int defStyleAttr)
+    public void setCurrentPlace(float place)
     {
-        super(context, attrs, defStyleAttr);
-    }
-
-    private void init()
-    {
-        bitFastScroll = BitmapFactory
-                .decodeResource(getResources(), R.mipmap.ic_launcher);
-        barHeight = bitFastScroll.getHeight();
-        barWidth = bitFastScroll.getWidth();
-        Log.d(tag, " bar height =" + barHeight);
-    }
-
-    @Override
-    protected void onDraw(Canvas canvas)
-    {
-        super.onDraw(canvas);
-        if (viewHeight == 0)
-        {
-            viewHeight = getHeight();
-        }
-        Log.d(tag, "viewHeight:" + viewHeight);
-        Paint paint = new Paint();
-        canvas.drawBitmap(bitFastScroll, 0, currentY, paint);
-    }
-
-    public void setCurrentPlace(float percent)
-    {
-        currentY = (viewHeight - barHeight) * percent;
+        Log.d(tag, "set current place = " + place);
+        currentY = (viewHeight - barHeight) * place;
         savedY = currentY;
-        invalidate();
+        mDragView.setTranslationY(currentY);
     }
 
     @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec)
+    protected void onLayout(boolean changed, int l, int t, int r, int b)
     {
-        setMeasuredDimension(barWidth, heightMeasureSpec);
+        super.onLayout(changed, l, t, r, b);
+        viewHeight = getHeight();
+        barHeight = mDragView.getHeight();
+        barWidth = mDragView.getWidth();
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event)
     {
+        if (!isViewHit(mDragView, (int) event.getX(), (int) event.getY()))
+        {
+            return super.onTouchEvent(event);
+        }
+
         float eventY = event.getY();
         switch (event.getAction())
         {
@@ -106,7 +76,6 @@ public class FastScrollBar extends View
                     float percent = currentY / (viewHeight - barHeight);
 
                     Log.d(tag, "percent:" + percent);
-
                     if (onChangeFastScrollPlaceListener != null)
                     {
                         onChangeFastScrollPlaceListener.onTouchingLetterChanged(percent);
@@ -118,18 +87,36 @@ public class FastScrollBar extends View
 
             case MotionEvent.ACTION_UP :
                 savedY = currentY;
+                Log.d(tag, "up:" + currentY);
                 if (onChangeFastScrollPlaceListener != null)
                 {
                     onChangeFastScrollPlaceListener.onState(false);
                 }
-
-                Log.d(tag, "up:" + currentY);
                 break;
         }
-
-        invalidate();
-
+        mDragView.setTranslationY(currentY);
         return true;
+    }
+
+    @Override
+    protected void onFinishInflate()
+    {
+        super.onFinishInflate();
+        mDragView = (TextView) findViewById(R.id.drag_view);
+    }
+
+    private boolean isViewHit(View view, int x, int y)
+    {
+        int[] viewLocation = new int[2];
+        view.getLocationOnScreen(viewLocation);
+        int[] parentLocation = new int[2];
+        this.getLocationOnScreen(parentLocation);
+
+        int screenX = parentLocation[0] + x;
+        int screenY = parentLocation[1] + y;
+
+        return screenX >= viewLocation[0] && screenX < viewLocation[0] + view.getWidth()
+            && screenY >= viewLocation[1] && screenY < viewLocation[1] + view.getHeight();
     }
 
     public void setOnChangeFastScrollPlace(

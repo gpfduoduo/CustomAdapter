@@ -1,6 +1,5 @@
 package com.guo.duoduo.customadapter.utils;
 
-
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -18,7 +17,7 @@ public class NativeImageLoader
     private static final String TAG = NativeImageLoader.class.getSimpleName();
     private static NativeImageLoader mInstance = new NativeImageLoader();
     private static LruCache<String, Bitmap> mMemoryCache;
-    private ExecutorService mImageThreadPool = Executors.newFixedThreadPool(1);
+    private ExecutorService mImageThreadPool = Executors.newFixedThreadPool(3);
 
     private NativeImageLoader()
     {
