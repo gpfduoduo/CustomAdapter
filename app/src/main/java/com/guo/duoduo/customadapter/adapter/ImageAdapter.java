@@ -6,7 +6,6 @@ import java.util.List;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Point;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -31,7 +30,7 @@ public class ImageAdapter extends CustomImageAdapter<GridItem>
         AbsListView.OnScrollListener,
         StickyGridHeadersSimpleAdapter
 {
-    private static final String tag = ImageAdapter.class.getSimpleName();
+    //private static final String tag = ImageAdapter.class.getSimpleName();
     private boolean mIsInit = false;
     private StickyGridHeadersGridView mStickyGridHeadersGridView;
     private Point mPoint = new Point(0, 0);
@@ -141,8 +140,6 @@ public class ImageAdapter extends CustomImageAdapter<GridItem>
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount,
             int totalItemCount)
     {
-
-        Log.d(tag, "onScroll");
         mStartIndex = firstVisibleItem;
         mEndIndex = firstVisibleItem + visibleItemCount;
         if (mOnCustomScrollListener != null)

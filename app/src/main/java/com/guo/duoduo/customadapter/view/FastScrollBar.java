@@ -72,9 +72,9 @@ public class FastScrollBar extends View
         canvas.drawBitmap(bitFastScroll, 0, currentY, paint);
     }
 
-    public void setCurrentPlace(float precent)
+    public void setCurrentPlace(float percent)
     {
-        currentY = (viewHeight - barHeight) * precent;
+        currentY = (viewHeight - barHeight) * percent;
         savedY = currentY;
         invalidate();
     }
@@ -104,6 +104,9 @@ public class FastScrollBar extends View
                     currentY = savedY + eventY - downY;
 
                     float percent = currentY / (viewHeight - barHeight);
+
+                    Log.d(tag, "percent:" + percent);
+
                     if (onChangeFastScrollPlaceListener != null)
                     {
                         onChangeFastScrollPlaceListener.onTouchingLetterChanged(percent);
