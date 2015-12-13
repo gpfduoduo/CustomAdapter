@@ -1,5 +1,6 @@
 package com.guo.duoduo.customadapter.view;
 
+
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -55,6 +56,16 @@ public class FastScrollLayout extends RelativeLayout
     {
         if (!isViewHit(mDragView, (int) event.getX(), (int) event.getY()))
         {
+            switch (event.getAction())
+            {
+                case MotionEvent.ACTION_UP :
+                    savedY = currentY;
+                    if (onChangeFastScrollPlaceListener != null)
+                    {
+                        onChangeFastScrollPlaceListener.onState(false);
+                    }
+                    break;
+            }
             return super.onTouchEvent(event);
         }
 
