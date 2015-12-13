@@ -31,6 +31,6 @@
             android:background="#44ff0000"
             android:text="I can be dragged !"
             android:layout_width="100dp"
-            android:layout_height="50dp"/>
+            android:layout_height="70dp"/>
     </com.guo.duoduo.customadapter.view.FastScrollLayout>
 </RelativeLayout>

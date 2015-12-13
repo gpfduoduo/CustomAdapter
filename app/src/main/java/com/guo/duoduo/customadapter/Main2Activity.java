@@ -18,8 +18,10 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.widget.AbsListView;
 import android.widget.GridView;
+import android.widget.TextView;
 
 import com.guo.duoduo.customadapter.adapter.ImageAdapter;
 import com.guo.duoduo.customadapter.entity.GridItem;
@@ -30,10 +32,11 @@ import com.guo.duoduo.customadapter.view.FastScrollLayout;
 
 public class Main2Activity extends AppCompatActivity
 {
-
+    private static final String tag = Main2Activity.class.getSimpleName();
     private ProgressDialog mProgressDialog;
     private ImageScanner mScanner;
     private GridView mGridView;
+    private TextView mDragView;
     private FastScrollLayout mFastScrollLayout;
     private List<GridItem> mGirdList = new ArrayList<>();
     private ImageAdapter imageAdapter;
@@ -116,10 +119,10 @@ public class Main2Activity extends AppCompatActivity
 
         mFastScrollLayout = (FastScrollLayout) findViewById(R.id.fast_layout);
         mFastScrollLayout
-                .setOnChangeFastScrollPlace(new FastScrollLayout.OnChangeFastScrollPlaceListener()
+                .setOnChangeFastScrollPlace(new FastScrollLayout.OnScrollBarScrolledListener()
                 {
                     @Override
-                    public void onTouchingLetterChanged(float percent)
+                    public void onScrollBarChanged(float percent)
                     {
                         isFastScrolling = true;
                         if (mGridView.getCount() > 0)
@@ -137,9 +140,18 @@ public class Main2Activity extends AppCompatActivity
                         }
                     }
                 });
+
+        mFastScrollLayout.setDragViewClickListener(new FastScrollLayout.OnDragViewClick()
+        {
+            @Override
+            public void dragViewClick()
+            {
+                Log.d(tag, "drag view clicked");
+            }
+        });
     }
 
-    public static String parserTimeToYM(long time)
+    private String parserTimeToYM(long time)
     {
         System.setProperty("user.timezone", "Asia/Shanghai");
         TimeZone tz = TimeZone.getTimeZone("Asia/Shanghai");

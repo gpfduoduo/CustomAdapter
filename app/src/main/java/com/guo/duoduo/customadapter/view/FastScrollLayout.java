@@ -3,7 +3,6 @@ package com.guo.duoduo.customadapter.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.RelativeLayout;
@@ -18,16 +17,19 @@ import com.guo.duoduo.customadapter.R;
 public class FastScrollLayout extends RelativeLayout
 {
     private static final String tag = FastScrollLayout.class.getSimpleName();
-
-    private OnChangeFastScrollPlaceListener onChangeFastScrollPlaceListener;
+    private static final float MAX_CLICK_DISTANCE = 5;
+    private static final int MAX_CLICK_TIME = 300;
+    private static final int MOVE_THREAD_HOLD = 20;
+    private OnScrollBarScrolledListener onChangeFastScrollPlaceListener;
+    private OnDragViewClick onDragViewClick;
     private TextView mDragView;
     private float currentY = 0;
     private float savedY = 0;
     private float downY = 0;
-
+    private float downX = 0;
     private int barHeight = 0;
-    private int barWidth = 0;
     private int viewHeight = 0;
+    private long mPressStartTime;
 
     public FastScrollLayout(Context context, AttributeSet attrs)
     {
@@ -36,7 +38,7 @@ public class FastScrollLayout extends RelativeLayout
 
     public void setCurrentPlace(float place)
     {
-        Log.d(tag, "set current place = " + place);
+        //Log.d(tag, "set current place = " + place);
         currentY = (viewHeight - barHeight) * place;
         savedY = currentY;
         mDragView.setTranslationY(currentY);
@@ -48,7 +50,6 @@ public class FastScrollLayout extends RelativeLayout
         super.onLayout(changed, l, t, r, b);
         viewHeight = getHeight();
         barHeight = mDragView.getHeight();
-        barWidth = mDragView.getWidth();
     }
 
     @Override
@@ -70,38 +71,46 @@ public class FastScrollLayout extends RelativeLayout
         }
 
         float eventY = event.getY();
+        float eventX = event.getX();
         switch (event.getAction())
         {
             case MotionEvent.ACTION_DOWN :
                 currentY = savedY;
                 downY = eventY;
-                Log.d(tag, "down:" + currentY);
+                downX = eventX;
                 break;
 
             case MotionEvent.ACTION_MOVE :
-                if ((int) (savedY + eventY - downY) >= 0
-                    && (int) (savedY + eventY - downY) <= (viewHeight - barHeight))
+                mPressStartTime = System.currentTimeMillis();
+                if (Math.abs(eventY - downY) > MOVE_THREAD_HOLD)
                 {
-                    currentY = savedY + eventY - downY;
-
-                    float percent = currentY / (viewHeight - barHeight);
-
-                    Log.d(tag, "percent:" + percent);
-                    if (onChangeFastScrollPlaceListener != null)
+                    if ((int) (savedY + eventY - downY) >= 0
+                        && (int) (savedY + eventY - downY) <= (viewHeight - barHeight))
                     {
-                        onChangeFastScrollPlaceListener.onTouchingLetterChanged(percent);
-                        onChangeFastScrollPlaceListener.onState(true);
+                        currentY = savedY + eventY - downY;
+                        float percent = currentY / (viewHeight - barHeight);
+                        if (onChangeFastScrollPlaceListener != null)
+                        {
+                            onChangeFastScrollPlaceListener.onScrollBarChanged(percent);
+                            onChangeFastScrollPlaceListener.onState(true);
+                        }
                     }
                 }
-                Log.d(tag, "move:" + currentY);
                 break;
 
             case MotionEvent.ACTION_UP :
                 savedY = currentY;
-                Log.d(tag, "up:" + currentY);
                 if (onChangeFastScrollPlaceListener != null)
                 {
                     onChangeFastScrollPlaceListener.onState(false);
+                }
+                //相当于点击效果
+                long pressDuration = System.currentTimeMillis() - mPressStartTime;
+                if (distance(downX, downY, event.getX(), event.getY()) < MAX_CLICK_DISTANCE
+                    && pressDuration < MAX_CLICK_TIME)
+                {
+                    if (onDragViewClick != null)
+                        onDragViewClick.dragViewClick();
                 }
                 break;
         }
@@ -130,16 +139,32 @@ public class FastScrollLayout extends RelativeLayout
             && screenY >= viewLocation[1] && screenY < viewLocation[1] + view.getHeight();
     }
 
-    public void setOnChangeFastScrollPlace(
-            OnChangeFastScrollPlaceListener onChangeListener)
+    private double distance(float x1, float y1, float x2, float y2)
+    {
+        float deltaX = x2 - x1;
+        float deltaY = y2 - y1;
+        return Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+    }
+
+    public void setOnChangeFastScrollPlace(OnScrollBarScrolledListener onChangeListener)
     {
         this.onChangeFastScrollPlaceListener = onChangeListener;
     }
 
-    public interface OnChangeFastScrollPlaceListener
+    public interface OnScrollBarScrolledListener
     {
-        public void onTouchingLetterChanged(float percent);
+        public void onScrollBarChanged(float percent);
 
         public void onState(boolean isMoving);
+    }
+
+    public void setDragViewClickListener(OnDragViewClick listener)
+    {
+        this.onDragViewClick = listener;
+    }
+
+    public interface OnDragViewClick
+    {
+        public void dragViewClick();
     }
 }

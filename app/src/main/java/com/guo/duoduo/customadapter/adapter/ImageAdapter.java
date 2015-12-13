@@ -16,7 +16,8 @@ import com.guo.duoduo.customadapter.R;
 import com.guo.duoduo.customadapter.entity.GridItem;
 import com.guo.duoduo.customadapter.utils.NativeImageLoader;
 import com.guo.duoduo.customadapter.view.MyImageView;
-import com.guo.duoduo.customadapterlibrary.CustomImageAdapter;
+import com.guo.duoduo.customadapterlibrary.CustomAdapter;
+import com.guo.duoduo.customadapterlibrary.ScrollDirectionListener;
 import com.guo.duoduo.customadapterlibrary.ViewHolder;
 import com.tonicartos.widget.stickygridheaders.StickyGridHeadersGridView;
 import com.tonicartos.widget.stickygridheaders.StickyGridHeadersSimpleAdapter;
@@ -25,22 +26,28 @@ import com.tonicartos.widget.stickygridheaders.StickyGridHeadersSimpleAdapter;
 /**
  * Created by 郭攀峰 on 2015/12/7.
  */
-public class ImageAdapter extends CustomImageAdapter<GridItem>
+public class ImageAdapter extends CustomAdapter<GridItem>
     implements
         AbsListView.OnScrollListener,
         StickyGridHeadersSimpleAdapter
 {
-    //private static final String tag = ImageAdapter.class.getSimpleName();
+    private static final String tag = ImageAdapter.class.getSimpleName();
+
     private boolean mIsInit = false;
     private StickyGridHeadersGridView mStickyGridHeadersGridView;
     private Point mPoint = new Point(0, 0);
     private int mStartIndex, mEndIndex;
     private OnCustomScrollListener mOnCustomScrollListener;
+    private int mLastScrollY;
+    private int mPreviousFirstVisibleItem;
+    private int mScrollThreshold = 150;
+
+    private ScrollDirectionListener mScrollDirectionListener;
 
     public ImageAdapter(AbsListView view, Context context, int resLayoutId,
             List<GridItem> list)
     {
-        super(view, context, resLayoutId, list);
+        super(context, resLayoutId, list);
         this.mStickyGridHeadersGridView = (StickyGridHeadersGridView) view;
         this.mStickyGridHeadersGridView.setOnScrollListener(this);
     }
@@ -86,6 +93,11 @@ public class ImageAdapter extends CustomImageAdapter<GridItem>
         }
     }
 
+    public void addScrollDirectionListener(ScrollDirectionListener listener)
+    {
+        this.mScrollDirectionListener = listener;
+    }
+
     @Override
     public void onScrollStateChanged(AbsListView view, int scrollState)
     {
@@ -96,6 +108,53 @@ public class ImageAdapter extends CustomImageAdapter<GridItem>
                 loadImage();
                 break;
         }
+    }
+
+    @Override
+    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount,
+            int totalItemCount)
+    {
+        if (totalItemCount == 0)
+            return;
+        if (isSameRow(firstVisibleItem))
+        {
+            int newScrollY = getTopItemScrollY();
+            boolean isSignificantDelta = Math.abs(mLastScrollY - newScrollY) > mScrollThreshold;
+            if (isSignificantDelta)
+            {
+                if (mLastScrollY > newScrollY)
+                    onScrollUp();
+                else
+                    onScrollDown();
+            }
+        }
+        else
+        {
+            if (firstVisibleItem > mPreviousFirstVisibleItem)
+                onScrollUp();
+            else
+                onScrollDown();
+        }
+        mLastScrollY = getTopItemScrollY();
+        mPreviousFirstVisibleItem = firstVisibleItem;
+
+        mStartIndex = firstVisibleItem;
+        mEndIndex = firstVisibleItem + visibleItemCount;
+        if (mOnCustomScrollListener != null)
+            mOnCustomScrollListener.onCustomScroll(view, firstVisibleItem,
+                visibleItemCount, totalItemCount);
+    }
+
+    public void onScrollUp()
+    {
+        if (mScrollDirectionListener != null)
+            mScrollDirectionListener.onScrollUp();
+    }
+
+    public void onScrollDown()
+    {
+        if (mScrollDirectionListener != null)
+            mScrollDirectionListener.onScrollDown();
     }
 
     public void loadImage()
@@ -136,15 +195,18 @@ public class ImageAdapter extends CustomImageAdapter<GridItem>
         mOnCustomScrollListener = listener;
     }
 
-    @Override
-    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount,
-            int totalItemCount)
+    private boolean isSameRow(int firstVisibleItem)
     {
-        mStartIndex = firstVisibleItem;
-        mEndIndex = firstVisibleItem + visibleItemCount;
-        if (mOnCustomScrollListener != null)
-            mOnCustomScrollListener.onCustomScroll(view, firstVisibleItem,
-                visibleItemCount, totalItemCount);
+        return firstVisibleItem == mPreviousFirstVisibleItem;
+    }
+
+    private int getTopItemScrollY()
+    {
+        if (mStickyGridHeadersGridView == null
+            || mStickyGridHeadersGridView.getChildAt(0) == null)
+            return 0;
+        View topChild = mStickyGridHeadersGridView.getChildAt(0);
+        return topChild.getTop();
     }
 
     @Override

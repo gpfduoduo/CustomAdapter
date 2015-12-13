@@ -56,7 +56,7 @@ public class FastScrollBar extends View
                 .decodeResource(getResources(), R.mipmap.ic_launcher);
         barHeight = bitFastScroll.getHeight();
         barWidth = bitFastScroll.getWidth();
-        Log.d(tag, " bar height =" + barHeight);
+        //Log.d(tag, " bar height =" + barHeight);
     }
 
     @Override
@@ -67,7 +67,7 @@ public class FastScrollBar extends View
         {
             viewHeight = getHeight();
         }
-        Log.d(tag, "viewHeight:" + viewHeight);
+        //Log.d(tag, "viewHeight:" + viewHeight);
         Paint paint = new Paint();
         canvas.drawBitmap(bitFastScroll, 0, currentY, paint);
     }
@@ -94,9 +94,8 @@ public class FastScrollBar extends View
             case MotionEvent.ACTION_DOWN :
                 currentY = savedY;
                 downY = eventY;
-                Log.d(tag, "down:" + currentY);
+                //Log.d(tag, "down:" + currentY);
                 break;
-
             case MotionEvent.ACTION_MOVE :
                 if ((int) (savedY + eventY - downY) >= 0
                     && (int) (savedY + eventY - downY) <= (viewHeight - barHeight))
@@ -105,7 +104,7 @@ public class FastScrollBar extends View
 
                     float percent = currentY / (viewHeight - barHeight);
 
-                    Log.d(tag, "percent:" + percent);
+                    //Log.d(tag, "percent:" + percent);
 
                     if (onChangeFastScrollPlaceListener != null)
                     {
@@ -115,15 +114,13 @@ public class FastScrollBar extends View
                 }
                 Log.d(tag, "move:" + currentY);
                 break;
-
             case MotionEvent.ACTION_UP :
                 savedY = currentY;
                 if (onChangeFastScrollPlaceListener != null)
                 {
                     onChangeFastScrollPlaceListener.onState(false);
                 }
-
-                Log.d(tag, "up:" + currentY);
+                //Log.d(tag, "up:" + currentY);
                 break;
         }
 
