@@ -35,6 +35,3 @@ public class Zte
 }
 
 ```
-
-## 开源库 
-[StickyGridHeaders](https://github.com/TonicArtos/StickyGridHeaders)
