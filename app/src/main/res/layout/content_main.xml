@@ -8,21 +8,11 @@
     tools:context="com.guo.duoduo.customadapter.MainActivity"
     tools:showIn="@layout/activity_main">
 
-    <com.tonicartos.widget.stickygridheaders.StickyGridHeadersGridView
-        android:id="@+id/asset_grid"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:columnWidth="90dip"
-        android:scrollbars="none"
+    <GridView
+        android:id="@+id/grid_view"
+        android:columnWidth="100dp"
+        android:horizontalSpacing="3dp"
         android:numColumns="auto_fit"
-        android:horizontalSpacing="3dip"
-        android:verticalSpacing="3dip"/>
-
-    <com.guo.duoduo.customadapter.view.FastScrollBar
-        android:id="@+id/fast_bar"
-        android:layout_alignParentRight="true"
-        android:background="@android:color/transparent"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"/>
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></GridView>
 </RelativeLayout>

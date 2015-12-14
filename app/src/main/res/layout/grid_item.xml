@@ -3,10 +3,9 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
-    <com.guo.duoduo.customadapter.view.MyImageView
+    <TextView
         android:id="@+id/grid_item"
-        android:scaleType="fitXY"
-        android:layout_width="fill_parent"
-        android:layout_height="100dip"/>
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 
 </RelativeLayout>
